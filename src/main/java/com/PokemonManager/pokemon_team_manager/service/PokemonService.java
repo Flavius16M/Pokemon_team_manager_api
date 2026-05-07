@@ -1,5 +1,7 @@
 package com.PokemonManager.pokemon_team_manager.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.PokemonManager.pokemon_team_manager.dto.PokemonDTO;
@@ -33,10 +35,32 @@ public class PokemonService {
         pokemon.setEntrenador(entrenador);
         return pokemonRepository.save(pokemon);
         
-        
+    
     }
 
-    
+    public List<Pokemon> obtenerPokemonsDeEntrenador(Long entrenadorId) {
+
+    Entrenador entrenador = entrenadorService.obtenerPorId(entrenadorId);
+
+    return entrenador.getPokemons();
+}
+    public void liberarPokemon(Long entrenadorId, Long pokemonId) {
+
+    //comprobar entrenador
+    Entrenador entrenador = entrenadorService.obtenerPorId(entrenadorId);
+
+    //buscar pokemon
+    Pokemon pokemon = pokemonRepository.findById(pokemonId)
+            .orElseThrow(() -> new RuntimeException("Pokemon no encontrado"));
+
+    //comprobar que pertenece al entrenador
+    if (!pokemon.getEntrenador().getId().equals(entrenador.getId())) {
+        throw new RuntimeException("Este pokemon no pertenece al entrenador");
+    }
+
+    //borrar pokemon
+    pokemonRepository.delete(pokemon);
+}
      
 
     

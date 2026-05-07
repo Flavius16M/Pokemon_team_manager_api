@@ -4,7 +4,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.PokemonManager.pokemon_team_manager.dto.EntrenadorResponseDTO;
+import com.PokemonManager.pokemon_team_manager.dto.PokemonResponseDTO;
 import com.PokemonManager.pokemon_team_manager.entity.Entrenador;
+import com.PokemonManager.pokemon_team_manager.exception.EntrenadorNoEncontradoException;
 import com.PokemonManager.pokemon_team_manager.repository.EntrenadorRepository;
 
 @Service
@@ -27,9 +30,22 @@ public class EntrenadorService {
     }
 
     public Entrenador obtenerPorId(Long id) {
-        return entrenadorRepository.findById(id).orElseThrow(() -> new RuntimeException("Entrenador no encontrado"));
+        return entrenadorRepository.findById(id).orElseThrow(() -> new EntrenadorNoEncontradoException("Entrenador no encontrado"));
     }
 
+    public EntrenadorResponseDTO convertirADTO(Entrenador entrenador) {
+
+    List<PokemonResponseDTO> pokemons = entrenador.getPokemons()
+        .stream()
+        .map(p -> new PokemonResponseDTO(p.getId(), p.getNombre()))
+        .toList();
+
+    return new EntrenadorResponseDTO(
+        entrenador.getId(),
+        entrenador.getNombre(),
+        pokemons
+    );
+}
    
 }
     
